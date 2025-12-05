@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import RegisterDomain from "./pages/RegisterDomain";
+import SearchDomain from "./pages/SearchDomain";
+import ResolveDomain from "./pages/ResolveDomain";
+import UpdateCID from "./pages/UpdateCID";
+import UploadPage from "./pages/UploadPage";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [account, setAccount] = useState(null);
+
+  async function connectWallet() {
+    if (!window.ethereum) {
+      alert("MetaMask not installed!");
+      return;
+    }
+
+    try {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      setAccount(accounts[0]);
+      console.log("Connected:", accounts[0]);
+    } catch (err) {
+      console.error("Wallet connection failed:", err);
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container">
+      <h1>Decentralized DNS (DDNS)</h1>
+
+      {/* Connect Wallet Button */}
+      <div style={{ marginBottom: "20px" }}>
+        {account ? (
+          <p><strong>Connected Wallet:</strong> {account}</p>
+        ) : (
+          <button onClick={connectWallet}>Connect Wallet</button>
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      <UploadPage />
+
+      <SearchDomain />
+
+      <RegisterDomain />
+
+      <UpdateCID />
+
+      <ResolveDomain />
+    </div>
+  );
 }
 
-export default App
+export default App;
