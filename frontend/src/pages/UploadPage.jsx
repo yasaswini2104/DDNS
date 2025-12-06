@@ -1,42 +1,57 @@
 import React, { useState } from "react";
 import { uploadToIPFS } from "../uploadToIPFS";
 
-function UploadPage() {
+export default function UploadPage({ onCid }) {
+  const [files, setFiles] = useState(null);
   const [cid, setCid] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleFileUpload = async () => {
-    if (!selectedFile) return alert("Please select a file!");
+  const handleUpload = async () => {
+    if (!files || files.length === 0) {
+      alert("Please select at least one file");
+      return;
+    }
 
-    const cid = await uploadToIPFS(selectedFile);
-    setCid(cid);
+    setLoading(true);
+    try {
+      const uploadedCid = await uploadToIPFS(files);
+      setCid(uploadedCid);
+
+      if (onCid) onCid(uploadedCid);
+    } catch (err) {
+      alert("Upload failed: " + err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div>
-      <h2>Upload Website / File to IPFS</h2>
+      <h3>Upload Website / File to IPFS (Lighthouse)</h3>
 
       <input
         type="file"
-        onChange={(e) => setSelectedFile(e.target.files[0])}
+        multiple
+        onChange={(e) => setFiles(e.target.files)}
       />
 
-      <button onClick={handleFileUpload}>Upload to IPFS</button>
+      <button onClick={handleUpload} disabled={loading}>
+        {loading ? "Uploading..." : "Upload to IPFS"}
+      </button>
 
       {cid && (
-        <p>
-          <strong>CID:</strong> {cid} <br />
-          <a 
-            href={`https://ipfs.io/ipfs/${cid}`} 
+        <div>
+          <p><strong>CID:</strong> {cid}</p>
+
+          <a
+            href={`https://gateway.lighthouse.storage/ipfs/${cid}`}
             target="_blank"
-            rel="noopener noreferrer"
+            rel="noreferrer"
           >
-            View on IPFS
+            View Uploaded File
           </a>
-        </p>
+        </div>
       )}
     </div>
   );
 }
-
-export default UploadPage;
