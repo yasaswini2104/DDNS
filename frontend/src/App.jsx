@@ -1,11 +1,11 @@
-import { useState } from "react";
+// import { useState } from "react";
 import RegisterDomain from "./pages/RegisterDomain";
 import SearchDomain from "./pages/SearchDomain";
 import ResolveDomain from "./pages/ResolveDomain";
 import UpdateCID from "./pages/UpdateCID";
 import UploadPage from "./pages/UploadPage";
 import WalletBar from "./components/WalletBar";
-
+import TransferDomain from "./pages/TransferDomain";
 
 function App() {
 
@@ -23,6 +23,9 @@ function App() {
       <RegisterDomain />
 
       <UpdateCID />
+
+      <TransferDomain />
+
 
       <ResolveDomain />
     </div>
